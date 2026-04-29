@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TaskReminder</title>
+</head>
+<body>
+
+<h1>TaskReminder</h1>
+
+<input id="tarea" placeholder="Nueva tarea">
+<button onclick="agregarTarea()">Agregar</button>
+
+<ul id="lista"></ul>
+
+<script>
+async function agregarTarea() {
+    const texto = document.getElementById("tarea").value;
+
+    await fetch("http://localhost:3000/tareas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto })
+    });
+
+    cargarTareas();
+}
+
+async function cargarTareas() {
+    const res = await fetch("http://localhost:3000/tareas");
+    const tareas = await res.json();
+
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    tareas.forEach(t => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            ${t.texto} - ${t.estado}
+            <button onclick="completar(${t.id})">✔</button>
+            <button onclick="eliminar(${t.id})">❌</button>
+        `;
+        lista.appendChild(li);
+    });
+}
+async function eliminar(id) {
+    await fetch(`http://localhost:3000/tareas/${id}`, {
+        method: "DELETE"
+    });
+
+    cargarTareas();
+}
+
+
+async function completar(id) {
+    await fetch(`http://localhost:3000/tareas/
+    ${id}`, {method: "PUT"
+    });
+
+    cargarTareas();
+}
+
+cargarTareas();
+</script>
+
+</body>
+</html>
