@@ -1,66 +1,241 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskReminder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-[#07111f] text-white overflow-x-hidden">
 
-<h1>TaskReminder</h1>
+<div class="flex min-h-screen">
 
-<input id="tarea" placeholder="Nueva tarea">
-<button onclick="agregarTarea()">Agregar</button>
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-[#0b1727] border-r border-white/10 p-8 hidden lg:flex flex-col justify-between">
 
-<ul id="lista"></ul>
+        <div>
 
-<script>
-async function agregarTarea() {
-    const texto = document.getElementById("tarea").value;
+            <h1 class="text-3xl font-bold text-cyan-400 mb-14">
+                TaskReminder
+            </h1>
 
-    await fetch("http://localhost:3000/tareas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto })
-    });
+            <nav class="space-y-4">
 
-    cargarTareas();
-}
+                <a href="#" class="sidebar-item active">
+                    📊 Dashboard
+                </a>
 
-async function cargarTareas() {
-    const res = await fetch("http://localhost:3000/tareas");
-    const tareas = await res.json();
+                <a href="#tasks" class="sidebar-item">
+                    📝 Tareas
+                </a>
 
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "";
+                <a href="#stats" class="sidebar-item">
+                    📈 Estadísticas
+                </a>
 
-    tareas.forEach(t => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            ${t.texto} - ${t.estado}
-            <button onclick="completar(${t.id})">✔</button>
-            <button onclick="eliminar(${t.id})">❌</button>
-        `;
-        lista.appendChild(li);
-    });
-}
-async function eliminar(id) {
-    await fetch(`http://localhost:3000/tareas/${id}`, {
-        method: "DELETE"
-    });
+                <a href="#activity" class="sidebar-item">
+                    🔔 Actividad
+                </a>
 
-    cargarTareas();
-}
+                <a href="#contacto" class="sidebar-item">
+                    ⚙ Configuración
+                </a>
+
+            </nav>
+
+        </div>
+
+        <div class="glass p-5 rounded-3xl border border-cyan-500/20">
+            <p class="text-gray-400 text-sm">Usuario</p>
+            <h3 class="text-xl font-semibold mt-2">Marco Herrera</h3>
+            <p class="text-cyan-400 mt-1 text-sm">
+                Sprint 4 Developer
+            </p>
+        </div>
+
+    </aside>
 
 
-async function completar(id) {
-    await fetch(`http://localhost:3000/tareas/
-    ${id}`, {method: "PUT"
-    });
+    <!-- MAIN -->
+    <main class="flex-1 p-6 lg:p-10">
 
-    cargarTareas();
-}
+        <!-- TOPBAR -->
+        <div class="flex justify-between items-center mb-10">
 
-cargarTareas();
-</script>
+            <div>
+                <h2 class="text-4xl font-bold">
+                    Bienvenido 👋
+                </h2>
+
+                <p class="text-gray-400 mt-2">
+                    Organiza tus tareas y aumenta tu productividad.
+                </p>
+            </div>
+
+            <button
+                   onclick="
+                           document
+                          .getElementById('tarea')
+                         .scrollIntoView({behavior:'smooth'});
+
+                            document
+                          .getElementById('tarea')
+                         .focus();
+                          "
+                class="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-6 py-3 rounded-2xl transition"
+            >
+                Agregar tarea
+            </button>
+
+        </div>
+
+
+        <!-- HERO -->
+        <section class="relative overflow-hidden rounded-[35px] p-10 glass border border-white/10 mb-10">
+
+            <div class="absolute w-[350px] h-[350px] bg-cyan-500/20 blur-[120px] rounded-full -top-20 -right-20"></div>
+
+            <div class="relative z-10 max-w-3xl">
+
+                <span class="bg-cyan-500/20 text-cyan-300 px-4 py-2 rounded-full text-sm border border-cyan-400/20">
+                    Plataforma inteligente
+                </span>
+
+                <h1 class="text-5xl lg:text-7xl font-bold leading-tight mt-8">
+                    Gestiona tareas de manera
+                    <span class="text-cyan-400">
+                        moderna y eficiente
+                    </span>
+                </h1>
+
+                <p class="text-gray-300 mt-8 text-lg leading-relaxed">
+                    TaskReminder combina diseño moderno,
+                    velocidad y productividad en una sola plataforma.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- STATS -->
+        <section id="stats" class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+
+            <div class="stats-card">
+                <p class="stats-title">Tareas completadas</p>
+                <h3 id="completadas" class="stats-number">0</h3>
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-title">Pendientes</p>
+                <h3 id="pendientes" class="stats-number">0</h3>
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-title">Productividad</p>
+                <h3 id="productividad" class="stats-number">0%</h3>
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-title">Total de tareas</p>
+                <h3 id="total" class="stats-number">0</h3>
+            </div>
+
+        </section>
+
+
+        <!-- TASKS -->
+        <section id="tasks" class="grid xl:grid-cols-3 gap-8">
+
+            <!-- PANEL -->
+            <div class="xl:col-span-2 glass rounded-[30px] p-8 border border-white/10">
+
+                <div class="flex justify-between items-center mb-8">
+
+                    <div>
+                        <h2 class="text-3xl font-bold">
+                            Gestión de tareas
+                        </h2>
+
+                        <p class="text-gray-400 mt-2">
+                            Administra tus actividades pendientes.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- INPUT -->
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+
+                    <input
+                        id="tarea"
+                        type="text"
+                        placeholder="Escribe una nueva tarea..."
+                        class="flex-1 bg-[#111827] border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-cyan-400"
+                    >
+
+                    <button
+                        onclick="agregarTarea()"
+                        class="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-8 py-4 rounded-2xl transition"
+                    >
+                        Agregar
+                    </button>
+
+                </div>
+
+
+                <!-- TASK LIST -->
+                <ul id="lista" class="space-y-5"></ul>
+
+            </div>
+
+
+            <!-- ACTIVITY -->
+            <div id="activity" class="glass rounded-[30px] p-8 border border-white/10">
+
+    <h2 class="text-3xl font-bold mb-8">
+        Actividad reciente
+    </h2>
+
+            <div id="actividadLista" class="space-y-5">
+       </div>
+
+        </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer id="contacto" class="mt-16 text-center border-t border-white/10 pt-10">
+
+            <h2 class="text-4xl font-bold mb-4">
+                TaskReminder
+            </h2>
+
+            <p class="text-gray-400">
+                Plataforma moderna de gestión de tareas.
+            </p>
+
+            <div class="flex flex-col md:flex-row justify-center gap-6 mt-8 text-lg">
+                <span>📧 jan.herrera@correounivalle.edu.co</span>
+                <span>💻 GitHub: NoSoyMarco</span>
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>

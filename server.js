@@ -1,91 +1,58 @@
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// conexión a MySQL
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '', // por defecto en XAMPP
-    database: 'taskreminder'
-});
-
-// conectar
-db.connect(err => {
-    if (err) {
-        console.error('Error de conexión:', err);
-        return;
-    }
-    console.log('Conectado a MySQL');
-});
-
-// crear tarea
-app.post('/tareas', (req, res) => {
-    const { texto } = req.body;
+// estadísticas
+app.get('/stats', (req, res) => {
 
     db.query(
-        'INSERT INTO tareas (texto, estado) VALUES (?, ?)',
-        [texto, 'pendiente'],
+        'SELECT * FROM tareas',
         (err, result) => {
+
             if (err) {
-                console.error(err);
-                res.status(500).send("Error");
-            } else {
-                res.json({ id: result.insertId, texto, estado: 'pendiente' });
+                return res.status(500).send(err);
             }
+
+            const total = result.length;
+
+            const completadas =
+                result.filter(
+                    t => t.estado === 'completada'
+                ).length;
+
+            const pendientes =
+                total - completadas;
+
+            const productividad =
+                total > 0
+                    ? Math.round(
+                        (completadas / total) * 100
+                    )
+                    : 0;
+
+            res.json({
+                total,
+                completadas,
+                pendientes,
+                productividad
+            });
+
         }
     );
+
 });
 
-// obtener tareas
-app.get('/tareas', (req, res) => {
-    db.query('SELECT * FROM tareas', (err, results) => {
-        if (err) {
-            res.status(500).send("Error");
-        } else {
-            res.json(results);
-        }
-    });
-});
 
-// completar tarea
-app.put('/tareas/:id', (req, res) => {
-    const id = req.params.id;
+// actividad reciente
+app.get('/actividad', (req, res) => {
 
     db.query(
-        'UPDATE tareas SET estado = ? WHERE id = ?',
-        ['completada', id],
-        (err) => {
+        'SELECT * FROM actividad ORDER BY fecha DESC LIMIT 5',
+        (err, result) => {
+
             if (err) {
-                res.status(500).send("Error");
-            } else {
-                res.json({ mensaje: "Tarea completada" });
+                return res.status(500).send(err);
             }
+
+            res.json(result);
+
         }
     );
-});
-// eliminar tarea
-app.delete('/tareas/:id', (req, res) => {
-    const id = req.params.id;
 
-    db.query(
-        'DELETE FROM tareas WHERE id = ?',
-        [id],
-        (err) => {
-            if (err) {
-                res.status(500).send("Error");
-            } else {
-                res.json({ mensaje: "Tarea eliminada" });
-            }
-        }
-    );
-});
-
-
-app.listen(3000, () => {
-    console.log("Servidor corriendo en http://localhost:3000");
 });
