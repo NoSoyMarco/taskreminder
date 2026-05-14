@@ -2,7 +2,7 @@
 // API DEL BACKEND
 // ========================================
 
-const API = "http://localhost:3000";
+const API = "https://taskreminder-api-pa5z.onrender.com";
 
 
 // ========================================
