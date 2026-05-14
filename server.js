@@ -1,3 +1,8 @@
+const cors = require('cors');
+const express = require('express');
+const app = express();
+app.use(cors());
+
 // estadísticas
 app.get('/stats', (req, res) => {
 
@@ -54,5 +59,17 @@ app.get('/actividad', (req, res) => {
 
         }
     );
+
+});
+
+// ========================================
+// INICIAR SERVIDOR
+// ========================================
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 
 });
