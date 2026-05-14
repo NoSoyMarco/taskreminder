@@ -38,6 +38,16 @@ const db = mysql.createPool({
 
 });
 
+// ========================================
+// EVITAR CRASH MYSQL
+// ========================================
+
+db.on('error', (err) => {
+
+    console.log("MySQL error:");
+    console.log(err);
+
+});
 
 // ========================================
 // PROBAR CONEXIÓN MYSQL
@@ -65,7 +75,9 @@ db.getConnection((err, connection) => {
 // CREAR TABLAS AUTOMÁTICAMENTE
 // ========================================
 
-db.query(`
+db.query(
+
+    `
     CREATE TABLE IF NOT EXISTS tareas (
 
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,9 +87,28 @@ db.query(`
         estado VARCHAR(50)
 
     )
-`);
+    `,
 
-db.query(`
+    (err) => {
+
+        if (err) {
+
+            console.log("Error creando tabla tareas:");
+            console.log(err);
+
+        } else {
+
+            console.log("Tabla tareas lista 🚀");
+
+        }
+
+    }
+
+);
+
+db.query(
+
+    `
     CREATE TABLE IF NOT EXISTS actividad (
 
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -87,7 +118,24 @@ db.query(`
         fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
     )
-`);
+    `,
+
+    (err) => {
+
+        if (err) {
+
+            console.log("Error creando tabla actividad:");
+            console.log(err);
+
+        } else {
+
+            console.log("Tabla actividad lista 🚀");
+
+        }
+
+    }
+
+);
 
 
 // ========================================
