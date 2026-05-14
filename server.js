@@ -40,10 +40,10 @@ const db = mysql.createPool({
 
 
 // ========================================
-// CONECTAR MYSQL
+// PROBAR CONEXIÓN MYSQL
 // ========================================
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
 
     if (err) {
 
@@ -53,6 +53,8 @@ db.connect((err) => {
     } else {
 
         console.log("Conectado a MySQL 🚀");
+
+        connection.release();
 
     }
 
